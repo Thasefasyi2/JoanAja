@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petugas Sesi</title>
+</head>
+<body>
+
+<div id="toggleButton" style="margin-bottom: 20px;">
+    <button onclick="toggleCode()">Toggle Code</button>
+</div>
+
+<div id="codeBlock" style="display: none;">
+    <script>
+        // Inisialisasi daftar nama petugas yang diizinkan
+        const namaPetugasDiizinkan = new Set(['Joan', 'Anna', 'Sasni', 'Febri', 'Ines', 'Friska']);
+
+        // Inisialisasi daftar nama petugas
+        const daftarPetugas = {
+            'Sesi 1 (Sabtu, 18.00)': null,
+            'Sesi 2 (Minggu, 06.00)': null,
+            'Sesi 3 (Minggu, 09.00)': null,
+            'Sesi 4 (Minggu, 13.00)': null,
+            'Sesi 5 (Minggu, 16.00)': null,
+            'Sesi 6 (Minggu, 19.00)': null
+        };
+
+        // Inisialisasi daftar sesi dan petugas setelah semua sesi terisi
+        const daftarSesiPetugas = [];
+
+        // Fungsi untuk memeriksa apakah nama petugas diizinkan
+        function cekNamaPetugas(namaPetugas) {
+            return namaPetugasDiizinkan.has(namaPetugas);
+        }
+
+        // Fungsi untuk menambahkan petugas pada waktu tertentu
+        function tambahPetugas(daftar, waktu, namaPetugas) {
+            if (waktu in daftar && !daftar[waktu] && cekNamaPetugas(namaPetugas)) {
+                daftar[waktu] = namaPetugas;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // Fungsi untuk mengganti nama petugas pada waktu tertentu
+        function gantiNamaPetugas(daftar, waktu, namaBaru) {
+            if (waktu in daftar && cekNamaPetugas(namaBaru)) {
+                daftar[waktu] = namaBaru;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // Fungsi untuk mengambil sesi dari input pengguna
+        function ambilSesi(inputSesi) {
+            const angkaSesi = parseInt(inputSesi.replace(/\D/g, ''), 10);
+            return !isNaN(angkaSesi) ? angkaSesi : null;
+        }
+
+        // Fungsi untuk mengonversi sesi menjadi waktu
+        function sesiKeWaktu(sesi) {
+            const waktuMap = {
+                1: 'Sesi 1 (Sabtu, 18.00)',
+                2: 'Sesi 2 (Minggu, 06.00)',
+                3: 'Sesi 3 (Minggu, 09.00)',
+                4: 'Sesi 4 (Minggu, 13.00)',
+                5: 'Sesi 5 (Minggu, 16.00)',
+                6: 'Sesi 6 (Minggu, 19.00)'
+            };
+
+            return waktuMap[sesi] || null;
+        }
+
+        // Fungsi untuk menampilkan pesan pada console dan halaman HTML
+        function tampilkanPesan(pesan) {
+            console.log(pesan);
+            document.write(pesan + "<br>");
+        }
+
+        // Perulangan hingga semua sesi terisi
+        for (let sesi = 1; sesi <= 6; sesi++) {
+            while (true) {
+                const inputSesi = prompt(`Masukkan sesi ${sesi} untuk menambah/mengganti nama petugas (contoh: 'Sesi ${sesi}')`).trim().toLowerCase();
+                const sesiValue = ambilSesi(inputSesi);
+
+                if (sesiValue !== null) {
+                    const waktuInput = sesiKeWaktu(sesiValue);
+
+                    if (waktuInput in daftarPetugas) {
+                        if (daftarPetugas[waktuInput] === null) {
+                            while (true) {
+                                const namaBaru = prompt(`Masukkan nama petugas untuk ${waktuInput}`).trim();
+                                if (tambahPetugas(daftarPetugas, waktuInput, namaBaru)) {
+                                    tampilkanPesan(`Sukses: ${namaBaru} terdaftar pada ${waktuInput}.`);
+                                    break;
+                                } else {
+                                    tampilkanPesan("Error: Nama petugas tidak valid atau sudah terdaftar.");
+                                }
+                            }
+                        } else {
+                            tampilkanPesan(`Info: ${waktuInput} sudah terisi dengan ${daftarPetugas[waktuInput]}.`);
+                            break;
+                        }
+                    } else {
+                        tampilkanPesan("Error: Waktu tidak valid.");
+                    }
+                } else {
+                    tampilkanPesan("Error: Sesi tidak valid.");
+                }
+            }
+        }
+
+        // Menyimpan sesi dan petugas setelah semua sesi terisi
+        for (const [waktu, namaPetugas] of Object.entries(daftarPetugas)) {
+            daftarSesiPetugas.push([waktu, namaPetugas]);
+        }
+
+        // Menampilkan daftar petugas setelah semua sesi terisi
+        tampilkanPesan("<br>Daftar Petugas Setelah Semua Sesi Terisi:");
+        for (const [waktu, namaPetugas] of Object.entries(daftarPetugas)) {
+            tampilkanPesan(`${waktu}: ${namaPetugas}`);
+        }
+
+        // Menampilkan daftar sesi dan petugas secara keseluruhan
+        tampilkanPesan("<br>Daftar Sesi dan Petugas Keseluruhan:");
+        for (const sesiPetugas of daftarSesiPetugas) {
+            tampilkanPesan(`${sesiPetugas[0]}: ${sesiPetugas[1]}`);
+        }
+    </script>
+</div>
+
+<script>
+    // Fungsi untuk menampilkan atau menyembunyikan kode
+    function toggleCode() {
+        const codeBlock = document.getElementById('codeBlock');
+        codeBlock.style.display = codeBlock.style.display === 'none' ? 'block' : 'none';
+    }
+</script>
+
+</body>
+</html>
